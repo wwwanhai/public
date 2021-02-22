@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>前海公证处清洁环境取证</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" type="text/css" href="./js/lib/keyboard/css/index.css" />
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/lib/axios.min.js"></script>
+    <script src="./js/lib/keyboard/index.js"></script>
+
+    <script type="module" crossorigin="anonymous" >
+        import UI from './js/main.js';
+
+        // window.onload = function () {
+        //     checkTime()
+        //     // const url = window.location.href
+        //     // const daId = url.split('daId=')
+        //     // UI.id = daId[1];
+        //     // UI.connect()
+        // }
+        
+        document.getElementById('confirm_btn').addEventListener('click', connect)
+        function connect () {
+            let time = document.getElementById('time').innerHTML
+            if (time == 1) {
+                document.getElementById('comfirm_box').style.display = 'none'
+                const url = window.location.href
+                const daId = url.split('daId=')
+                UI.id = daId[1];
+                UI.connect()
+            }
+        }
+
+        document.getElementById('reConnect').addEventListener('click', reConnect)
+        function reConnect () {
+            console.log('click reConnect')
+            UI.reconnect()
+        }
+
+        var checkTime = function () {
+            let time = 5
+            var timeComputed = setInterval(fun => {
+                if (time > 1) {
+                    time--
+                    document.getElementById('time').innerHTML = time
+                } else {
+                    window.clearInterval(timeComputed)
+                    document.getElementById('time_part').style.display = 'none'
+                    document.getElementById('confirm_btn').style.color = '#337BF6'
+                }
+            }, 1000)
+        }()
+       
+    </script>
+</head>
+
+<body>
+    <div id="top_bar">
+        <div class='header_part'>
+            <p class='readoing'>录制中</p>
+            <p id="record-time" class='time_part'>00:00:00</p>
+            <p id="reConnect">重新连接</p>
+        </div>
+    </div>
+    <div id="screen">
+        <!-- This is where the remote screen will appear -->
+    </div>
+    <div id='comfirm_box'>
+        <div class='confirm_part'>
+            <p class='confirm_part_header'>
+                取证提示
+            </p>
+            <div class='confirm_part_content'>
+                <p class='part_content_item'>
+                    <span>1、</span>
+                    <span>需要键盘请点击屏幕底部的
+                        <img src="./image/icon-keyborad.svg" alt="" style='width:24px'>
+                        ，再次点击可关闭。</span>
+                </p>
+                <p class='part_content_item'>
+                    <span>2、</span>
+                    <span> 视频录制范围为非键盘区域，不会录到您的密码，请放心。</span>
+                </p>
+            </div>
+            <div id='confirm_btn' >
+                我已知晓
+                <span id='time_part'>
+                    (
+                        <span id='time'>5</span>s
+                    )
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class='board_part'style='text-align: right;'>
+        <img style='width:45px' id='boardIcon' src="./image/icon_keyboard.svg" alt="" onclick="showBoard()">
+        <div class="simple-keyboard" id='simplekeyboard'></div>
+    </div>
+</body>
+<script>
+    function showBoard () {
+        const display = document.getElementById('simplekeyboard').style.display
+        document.getElementById('simplekeyboard').style.display = display == 'block' ? 'none' : 'block'
+        const boardList = document.getElementsByClassName('hg-button')
+        for(let i = 0; i < boardList.length; i++ ) {
+            if (boardList[i].className.indexOf('lineBoard') != -1) {
+                boardList[i].classList.remove('lineBoard')
+            }
+        }
+    }
+</script>
+</html>

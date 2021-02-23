@@ -4,10 +4,21 @@
 	 viewBox="0 0 200 200" style="enable-background:new 0 0 200 200;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#337BF6;}
+	.st1{fill:#FFFFFF;}
 </style>
 <path class="st0" d="M188.3,33.8H11.7c-6.1,0-11,5-11,11v110.3c0,6.1,5,11,11,11h176.5c6.1,0,11-5,11-11V44.8
-	C199.3,38.8,194.3,33.8,188.3,33.8z M111,55.9h22.1v22.1H111V55.9z M144.1,89V111h-22.1V89H144.1z M77.9,55.9H100v22.1H77.9V55.9z
-	 M111,89V111H89V89H111z M44.8,55.9h22.1v22.1H44.8V55.9z M77.9,89V111H55.9V89H77.9z M22.8,55.9h11v22.1h-11V55.9z M22.8,89h22.1
-	V111H22.8V89z M33.8,144.1h-11v-22.1h11V144.1z M133.1,144.1H44.8v-22.1h88.3V144.1z M177.2,144.1h-33.1v-22.1h33.1V144.1z
-	 M177.2,111h-22.1V89h22.1L177.2,111L177.2,111z M177.2,77.9h-33.1V55.9h33.1V77.9z"/>
+	C199.3,38.8,194.3,33.8,188.3,33.8z"/>
+<rect x="111" y="55.9" class="st1" width="22.1" height="22.1"/>
+<rect x="122" y="89" class="st1" width="22.1" height="22"/>
+<rect x="77.9" y="55.9" class="st1" width="22.1" height="22.1"/>
+<rect x="89" y="89" class="st1" width="22" height="22"/>
+<rect x="44.8" y="55.9" class="st1" width="22.1" height="22.1"/>
+<rect x="55.9" y="89" class="st1" width="22" height="22"/>
+<rect x="22.8" y="55.9" class="st1" width="11" height="22.1"/>
+<rect x="22.8" y="89" class="st1" width="22.1" height="22"/>
+<rect x="22.8" y="122" class="st1" width="11" height="22.1"/>
+<rect x="44.8" y="122" class="st1" width="88.3" height="22.1"/>
+<polygon class="st1" points="177.2,144.1 144.1,144.1 144.1,122 177.2,122 177.2,144.1 "/>
+<polygon class="st1" points="177.2,111 155.1,111 155.1,89 177.2,89 177.2,111 "/>
+<polygon class="st1" points="177.2,77.9 144.1,77.9 144.1,55.9 177.2,55.9 177.2,77.9 "/>
 </svg>

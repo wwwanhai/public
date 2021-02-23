@@ -12,14 +12,6 @@
 
     <script type="module" crossorigin="anonymous" >
         import UI from './js/main.js';
-
-        // window.onload = function () {
-        //     checkTime()
-        //     // const url = window.location.href
-        //     // const daId = url.split('daId=')
-        //     // UI.id = daId[1];
-        //     // UI.connect()
-        // }
         
         document.getElementById('confirm_btn').addEventListener('click', connect)
         function connect () {
@@ -92,6 +84,17 @@
                     )
                 </span>
             </div>
+        </div>
+    </div>
+    <div id='file_res'>
+        <img id='arrow' src="./image/pic_arrow.svg" alt="">
+        <div class='res_box'>
+            <div class='res_header'>
+                <img src="./image/vetify-success.svg" id='status_success' alt="">
+                <img src="./image/vetify-failure.svg" id='status_fild' alt="">
+                <span id='status_title'></span>
+            </div>
+            <div id='status_res'></div>
         </div>
     </div>
     <div class='board_part'style='text-align: right;'>

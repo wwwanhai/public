@@ -35,6 +35,7 @@ import TightPNGDecoder from "./decoders/tightpng.js";
 import { SMessageType } from './constant.js';
 
 import board from '../lib/keyboard/borad.js'
+import fileRes from '../lib/fileRes.js'
 
 // How many seconds to wait for a disconnect to finish
 const DISCONNECT_TIMEOUT = 3;
@@ -243,6 +244,10 @@ export default class RFB extends EventTargetMixin {
                 case SMessageType.SKeyBoard:
                     console.log("keyboard event!");
                     this._handleServerKeyboardEvent();
+                    break;
+                case SMessageType.SNotaryFileStatus:
+                    console.log("file download event!");
+                    this._handleNotaryFileEvent();
                     break;
                 default:
                     console.log("recive unknow data!");
@@ -513,8 +518,27 @@ export default class RFB extends EventTargetMixin {
             RFB.messages.clientCutText(this._sock, data);
         }
     }
-    
+
     // ===== PRIVATE METHODS =====
+    _handleNotaryFileEvent() {
+        if (this._sock.rQlen === 0) {
+            Log.Warn("_handleNotaryFileEvent called on an empty receive queue");
+            return;
+        }
+
+        let len = this._sock.rQshift8();
+        let data = this._sock.rQshiftBytes(len)
+        console.log("_handleNotaryFileEvent: ", data[0])
+        if (data[0] == 200) {
+            fileRes.showSuccessRes('解压成功', '请务必点击左上角的返回图标"<"<br/>结束本次取证。')
+        }
+        if (data[0] == 201) {
+            fileRes.showFiedRes('解压失败', '请务必点击左上角的返回图标"<", 结束本次取证后，再重新取证，请确保解压密码的正确性。')
+        }
+        if (data[0] == 202) {
+            fileRes.showSuccessRes('下载成功', '请务必点击左上角的返回图标"<"<br/>结束本次取证。')
+        }
+    }
     _handleServerKeyboardEvent() {
         if (this._sock.rQlen === 0) {
             Log.Warn("handleServerKeyboardEvent called on an empty receive queue");

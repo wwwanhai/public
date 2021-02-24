@@ -34,9 +34,6 @@ import TightDecoder from "./decoders/tight.js";
 import TightPNGDecoder from "./decoders/tightpng.js";
 import { SMessageType } from './constant.js';
 
-import board from '../lib/keyboard/borad.js'
-import fileRes from '../lib/fileRes.js'
-
 // How many seconds to wait for a disconnect to finish
 const DISCONNECT_TIMEOUT = 3;
 const DEFAULT_BACKGROUND = 'rgb(40, 40, 40)';
@@ -243,11 +240,11 @@ export default class RFB extends EventTargetMixin {
                     break;
                 case SMessageType.SKeyBoard:
                     console.log("keyboard event!");
-                    this._handleServerKeyboardEvent();
+                    this._handleSMessage("SKeyBoard");
                     break;
                 case SMessageType.SNotaryFileStatus:
                     console.log("file download event!");
-                    this._handleNotaryFileEvent();
+                    this._handleSMessage("SNotaryFileStatus");
                     break;
                 default:
                     console.log("recive unknow data!");
@@ -520,54 +517,40 @@ export default class RFB extends EventTargetMixin {
     }
 
     // ===== PRIVATE METHODS =====
-    _handleNotaryFileEvent() {
+    _handleSMessage(type) {
+        // 自定义server message 必须一次性处理完
         if (this._sock.rQlen === 0) {
-            Log.Warn("_handleNotaryFileEvent called on an empty receive queue");
+            Log.Warn("_handleSMessage called on an empty receive queue");
             return;
         }
-
-        let len = this._sock.rQshift8();
-        let data = this._sock.rQshiftBytes(len)
-        console.log("_handleNotaryFileEvent: ", data[0])
-        if (data[0] == 200) {
-            fileRes.showSuccessRes('解压成功', '请务必点击左上角的返回图标"<"<br/>结束本次取证。')
-        }
-        if (data[0] == 201) {
-            fileRes.showFiedRes('解压失败', '请务必点击左上角的返回图标"<", 结束本次取证后，再重新取证，请确保解压密码的正确性。')
-        }
-        if (data[0] == 202) {
-            fileRes.showSuccessRes('下载成功', '请务必点击左上角的返回图标"<"<br/>结束本次取证。')
-        }
-    }
-    _handleServerKeyboardEvent() {
-        if (this._sock.rQlen === 0) {
-            Log.Warn("handleServerKeyboardEvent called on an empty receive queue");
-            return;
+        Log.Debug(type);
+        if (this._sock.rQwait("SMessage length", 4, 1)) { 
+            // 不够4个字节直接抛弃所有内容
+            this._sock.rQskipAll()
+            return 
         }
 
-        let len = this._sock.rQshift8();
-        let data = this._sock.rQshiftBytes(len)
-        console.log("handleServerKeyboardEvent: ", data[0])
-        
-        if (data[0] == 100 || data[0] == 102) {
-            // open board
-            const state = document.getElementById('simplekeyboard').style.display
-            console.log(state)
-            if (state == 'none' || !state) {
-                document.getElementById('simplekeyboard').style.display = 'block'
-            }
+        let length = this._sock.rQshift32();
+        length = toSigned32bit(length);
+
+        if (this._sock.rQwait("SMessage content", Math.abs(length), 8)) { 
+            // 不够conent 长度直接抛弃所有内容    
+            this._sock.rQskipAll()
+            return
         }
-        if (data[0] == 101) {
-            // close board
-            const state = document.getElementById('simplekeyboard').style.display
-            console.log(state)
-            if (state == 'block') {
-                document.getElementById('simplekeyboard').style.display = 'none'
-                // this.debounce(this.showBoard('none'), 500)
-                board.clearLine()
-            }
+
+        if (length == 4) {
+              // 处理内容
+              let eventCode = this._sock.rQshift32();
+              eventCode = toSigned32bit(eventCode);
+  
+              this.dispatchEvent(new CustomEvent( type, { detail: { eventCode } }));
+        } else {
+            let data = this._sock.rQshiftBytes(length)
         }
+        return
     }
+    
     _connect() {
         Log.Debug(">> RFB.connect");
 

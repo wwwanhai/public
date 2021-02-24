@@ -71,7 +71,10 @@ export default class Websock {
     rQskipBytes(bytes) {
         this._rQi += bytes;
     }
-
+    rQskipAll() {
+        // 跳过所有内容
+        this._rQi = this._rQlen;
+    }
     rQshift8() {
         return this._rQshift(1);
     }

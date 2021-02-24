@@ -3,6 +3,7 @@ import RFB from './vnc/rfb.js';
 import KeyTable from "./vnc/input/keysym.js";
 const Keyboard = window.SimpleKeyboard.default;
 import board from './lib/keyboard/borad.js';
+import fileRes from './lib/fileRes.js'
 
 const UI = {
     connected: false,
@@ -67,6 +68,42 @@ const UI = {
         // UI.rfb.addEventListener("bell", UI.bell);
         UI.rfb.addEventListener("desktopname", UI.updateDesktopName);
 
+        UI.rfb.addEventListener("SKeyBoard", function(e) {
+            console.log("SKeyBoard", e.detail.eventCode)
+            const data = e.detail.eventCode
+            if (data == 100 || data == 102) {
+                // open board
+                const state = document.getElementById('simplekeyboard').style.display
+                console.log(state)
+                if (state == 'none' || !state) {
+                    document.getElementById('simplekeyboard').style.display = 'block'
+                }
+            }
+            if (data == 101) {
+                // close board
+                const state = document.getElementById('simplekeyboard').style.display
+                console.log(state)
+                if (state == 'block') {
+                    document.getElementById('simplekeyboard').style.display = 'none'
+                    // this.debounce(this.showBoard('none'), 500)
+                    board.clearLine()
+                }
+            }
+        });
+        UI.rfb.addEventListener("SNotaryFileStatus", function(e) {
+            console.log("SNotaryFileStatus", e.detail.eventCode)
+            const data = e.detail.eventCode
+            if (data == 200) {
+                fileRes.showSuccessRes('取证成功', '请点击左上角的返回图标"<"<br/>结束本次取证。')
+            }
+            if (data == 201) {
+                fileRes.showFiedRes('取证失败', '请点击左上角的返回图标"<", 结束本次取证后，再重新取证，请确保解压密码的正确性。')
+            }
+            if (data == 202) {
+                fileRes.showSuccessRes('取证成功', '请点击左上角的返回图标"<"<br/>结束本次取证。')
+            }
+        });
+
         UI.rfb.scaleViewport = true;
         UI.rfb.showDotCursor = true;
 
@@ -99,14 +136,14 @@ const UI = {
                 ],
                 alt: [
                 "1 2 3 4 5 6 7 8 9 0",
-                `- / | : ; ( ) $`,
-                "{more} ~ , @ . ? {bksp}",
+                `- / : ; ( ) _ $ & \"`,
+                "{more} . ~ , @ ! ' ? {bksp}",
                 "{default} {space} {enter}"
                 ],
                 more: [
                     "[ ] { } # % ^ * + =",
-                    "_ \\ ` < > & \" '",
-                    "{num} ~ , @ . ? {bksp}",
+                    "\\ | < > ￥ _ $ & \" •",
+                    "{num} . ~ , @ ! ` ? {bksp}",
                     "{default} {space} {enter}" 
                 ]
             },
@@ -127,6 +164,13 @@ const UI = {
             }     
         });
         document.getElementById('boardIcon').style.display='block'
+        setTimeout(fun => {
+            this.displaScreen()
+        }, 1500)
+    },
+
+    displaScreen () {
+        UI.rfb._sendMouse(200, 200, 1)
     },
 
     connectFinished(e) {
@@ -195,7 +239,9 @@ const UI = {
     },
 
     updateTime() {
-        const timeElasped = new Date().getTime() - new Date(UI.startTime)
+        const startTIme = UI.startTime.replace(/-/g,'/')
+        const timeElasped = new Date().getTime() - new Date(startTIme)
+        // const timeElasped = new Date().getTime() - new Date(UI.startTime)
         let hours = Math.floor(timeElasped / (1000 * 60 * 60))
         let minutes = Math.floor((timeElasped % (1000 * 60 * 60)) / (1000 * 60)) + ''
         let seconds = Math.floor((timeElasped % (1000 * 60)) / 1000) + ''
@@ -216,7 +262,6 @@ const UI = {
     onChange(input) {},
 
     onKeyPress(button) {
-        console.log("Button pressed", button);
         if (button.includes("{") && button.includes("}")) {
             this.handleShift(button);
         } else {
@@ -244,15 +289,15 @@ const UI = {
                 const shiftDotKey = ['XK_asciitilde', 'XK_exclam', 'XK_at', 'XK_numbersign', 'XK_dollar', 'XK_percent', 'XK_asciicircum', 'XK_ampersand', 'XK_asterisk', 'XK_parenleft', 'XK_parenright', 'XK_underscore', 'XK_plus', 'XK_braceleft', 'XK_braceright', 'XK_bar', 'XK_colon', 'XK_quotedbl', 'XK_less', 'XK_greater', 'XK_question']
                 key = shiftDotKey[index]
             }
-            const dot = ['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/']
+            const dot = ['`', '-', '=', '[', ']', '\\', ';', "'", ',', '.', '/', '•', '￥']
             if (dot.indexOf(button) != -1) {
                 const index = dot.indexOf(button)
-                const dotKey = ['XK_grave', 'XK_minus', 'XK_equal', 'XK_bracketleft', 'XK_bracketright', 'XK_backslash', 'XK_semicolon', 'XK_apostrophe', 'XK_comma', 'XK_period', 'XK_slash']
+                const dotKey = ['XK_grave', 'XK_minus', 'XK_equal', 'XK_bracketleft', 'XK_bracketright', 'XK_backslash', 'XK_semicolon', 'XK_apostrophe', 'XK_comma', 'XK_period', 'XK_slash', 'XK_periodcentered', 'XK_yen']
+                console.log()
                 key = dotKey[index]
             }
         }
         if (KeyTable[key]) {
-            console.log(KeyTable[key])
             UI.rfb.sendKey(KeyTable[key], "ControlLeft", true);
         }
     },
